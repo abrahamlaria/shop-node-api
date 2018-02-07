@@ -1,11 +1,21 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
+//Adds logs to the console
 app.use(morgan('dev'));
+
+//Parses the body of the request to a readable format
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+//Extract json data and makes it readable
+app.use(bodyParser.json());
 
 //Routes which should handle requests
 app.use('/products', productRoutes);
