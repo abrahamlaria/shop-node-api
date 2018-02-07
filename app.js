@@ -2,9 +2,16 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mogoose = require('mongoose');
 
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
+
+mongoose.connect('mongodb+srv://nodeshop:' + process.env.MONGO_ATLAS_PW + '@node-rest-shop-eotmg.mongodb.net/test', 
+    {
+        useMongoClient: true
+    }
+);
 
 //Adds logs to the console
 app.use(morgan('dev'));
