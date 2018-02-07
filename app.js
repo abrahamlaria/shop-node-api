@@ -11,13 +11,14 @@ app.use(morgan('dev'));
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 
+//Handles not found routes
 app.use((req, res, next) => {
     const error = new Error('Not found');
     error.status = 404;
     next(error);
 });
 
-//handles error from everywhere in the application
+//Handles any other errors
 app.use((error, req, res, next) => {
     res.status(error.status || 500);
     res.json({
