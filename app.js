@@ -17,6 +17,22 @@ app.use(bodyParser.urlencoded({
 //Extract json data and makes it readable
 app.use(bodyParser.json());
 
+//Adding headers to handle CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+        'Access-Control-Allow-Headers', 
+        'Origin, X-Requested-With, Accept, Authorization'
+    );
+    if (req.method === 'OPTIONS') {
+        res.header(
+            'Access-Control-Allow-', 
+            'GET, POST, PUT, PATCH, DELETE'
+        );
+        return Response.status(200).json({});
+    }
+});
+
 //Routes which should handle requests
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
