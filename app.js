@@ -31,6 +31,7 @@ app.use((req, res, next) => {
         );
         return Response.status(200).json({});
     }
+    next();
 });
 
 //Routes which should handle requests
