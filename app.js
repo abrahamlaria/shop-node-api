@@ -7,11 +7,12 @@ const mongoose = require('mongoose');
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
-mongoose.connect('mongodb+srv://nodeshop:' + process.env.MONGO_ATLAS_PW + '@node-rest-shop-eotmg.mongodb.net/test', 
+mongoose.connect('mongodb://nodeshop:' + process.env.MONGO_ATLAS_PW + '@node-rest-shop-shard-00-00-eotmg.mongodb.net:27017,node-rest-shop-shard-00-01-eotmg.mongodb.net:27017,node-rest-shop-shard-00-02-eotmg.mongodb.net:27017/test?ssl=true&replicaSet=node-rest-shop-shard-0&authSource=admin', 
     {
         useMongoClient: true
     }
 );
+
 
 //Adds logs to the console
 app.use(morgan('dev'));
