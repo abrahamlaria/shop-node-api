@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({
 //Extract json data and makes it readable
 app.use(bodyParser.json());
 
-//Adding headers to handle CORS
+//Adding headers to handle CORS blah blah blah
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
