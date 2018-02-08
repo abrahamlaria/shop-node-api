@@ -70,7 +70,7 @@ router.patch('/:productId', (req, res, next) => {
         updateOps[ops.propName] = ops.nameValue;
         updateOps[ops.propPrice] = ops.priceValue;
     }
-    
+
      //updateOps is an object that will have the updated value/values for name and price.
     Product.update({_id: id}, {$set: updateOps})
         .exec()
@@ -86,6 +86,7 @@ router.patch('/:productId', (req, res, next) => {
         });       
 });
 
+//Delete a product by ID
 router.delete('/:productId', (req, res, next) => {
     const id = req.params.productId;
     Product.remove({
