@@ -13,6 +13,9 @@ mongoose.Promise = global.Promise;
 //Adds logs to the console
 app.use(morgan('dev'));
 
+//Makes the uploads folder public
+app.use('/uploads', express.static('uploads'));
+
 //Parses the body of the request to a readable format
 app.use(bodyParser.urlencoded({
     extended: false
