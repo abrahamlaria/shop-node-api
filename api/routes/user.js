@@ -6,8 +6,8 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
 //Create a new user
-route.post('/signup', (req, res, next) => {
-    bcrypt.hash(req.body.password, 10, (err, hash => {
+router.post('/signup', (req, res, next) => {
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
         if(err) {
             return res.status(500).json({
                 error: err
@@ -32,7 +32,7 @@ route.post('/signup', (req, res, next) => {
                     });
                 });
         }
-    }))    
+    })   
 });
 
 
