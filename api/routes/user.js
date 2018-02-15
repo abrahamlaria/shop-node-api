@@ -46,6 +46,45 @@ router.post('/signup', (req, res, next) => {
 
 });
 
+//Login users
+router.post('/login', (req, res, next) => {
+    user.find({
+        email: req.body.email
+    })
+        .exec()
+        .then(user => {
+            //If there's no user return a 401 (Unauthorized) insted of 404 (Not found) to prevent brute force attacks. 
+            if (user.length < 1) {
+                return res.status(401).json({
+                    message: 'Authentication failed'
+                });
+            }
+            //if there's a user then compare the provided password with the one stored in the database.
+            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+                if (err) {
+                    return res.status(401).json({
+                        message: 'Authentication failed'
+                    });
+                }
+                if (result) {
+                    return res.status(200).json({
+                        message: 'Authorization successful' //The toke goes here.
+                    });
+                }
+                //If for some reason none of the if statements can't be reached, return an 401 error.
+                return res.status(401).json({
+                    message: 'Authentication failed'
+                });
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
+//Delete a specific user by ID
 router.delete('/:userId', (req, res, next) => {
     User.remove({
         _id: req.params.userId
