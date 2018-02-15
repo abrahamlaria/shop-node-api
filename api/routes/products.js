@@ -3,31 +3,16 @@ const router = express.Router();
 const multer = require('multer');
 const checkAuth = require('../middleware/check-auth');
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, './uploads/');
-    },
-    filename: function(req, file, cb) {
-        cb(null, new Date().toISOString() + file.originalname);
-    }
-});
+const ImagesController = require('../controllers/images');
 
-const fileFilter = (req, file, cb) => {
-    
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-}
+//Storage a product image in the uploads folder
+const storage = ImagesController.images_storage;
 
-const upload = multer({
-    storage: storage, 
-    limits: {
-        fileSize: 1024 * 1024 * 2 //Up to 2Mb
-    },
-    fileFilter: fileFilter
-});
+//Accept only .jpg and .png images files
+const fileFilter = ImagesController.images_file_filter;
+
+//Uploads the image and limits the file size to 2Mb
+const upload = ImagesController.images_upload;
 
 const ProductsController = require('../controllers/products');
 
