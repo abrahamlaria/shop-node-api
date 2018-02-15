@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -63,8 +64,8 @@ router.get('/', (req, res, next) => {
         });
 });
 
-//Creates a new product
-router.post('/', upload.single('productImage'), (req, res, next) => {
+//Creates a new product and use the check-auth middleware to protect the route and allow access to it only under a valid access token
+router.post('/', checkAuth, upload.single('productImage'), (req, res, next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -123,7 +124,7 @@ router.get('/:productId', (req, res, next) => {
         });
 });
 
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     const updateOps = {};
 
@@ -154,7 +155,7 @@ router.patch('/:productId', (req, res, next) => {
 });
 
 //Delete a product by ID
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     Product.remove({
         _id: id
