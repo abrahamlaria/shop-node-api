@@ -48,7 +48,7 @@ router.post('/signup', (req, res, next) => {
 
 //Login users
 router.post('/login', (req, res, next) => {
-    user.find({
+    User.find({
         email: req.body.email
     })
         .exec()
@@ -101,5 +101,37 @@ router.delete('/:userId', (req, res, next) => {
             });
         });
 });
+
+//Just for testing DELETE THIS as it is a security issue.
+// Return all users
+// router.get('/', (req, res, next) => {
+//     User.find()
+//         .select('_id email password')
+//         .exec()
+//         .then(users => {
+//             console.log(users);
+//             const response = {              
+//                 count: users.length,
+//                 users: users.map(user => {
+//                     return {
+//                         id: user._id,
+//                         email: user.email,
+//                         password: user.password,
+//                         request: {
+//                             type: 'GET',
+//                             url: 'http://localhost:3000/user/' + user._id
+//                         }
+//                     }
+//                 })
+//             };
+//             res.status(200).json(response);          
+//         })
+//         .catch(err => {
+//             console.log(err);
+//             res.status(500).json({
+//                 error: err
+//             });
+//         });
+// });
 
 module.exports = router;
