@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
@@ -67,8 +68,20 @@ router.post('/login', (req, res, next) => {
                     });
                 }
                 if (result) {
+                    console.log(user[0].email, user[0]._id)
+                    //Generate a token
+                    const token = jwt.sign({
+                        email: user[0].email,
+                        userId: user[0]._id
+                    }, 
+                    process.env.JWT_KEY,
+                    {
+                        expiresIn: "1h"
+                    });
+                    //Return the auth token
                     return res.status(200).json({
-                        message: 'Authorization successful' //The toke goes here.
+                        message: 'Authorization successful',
+                        token: token
                     });
                 }
                 //If for some reason none of the if statements can't be reached, return an 401 error.
