@@ -1,150 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
+const UserController = require('../controllers/user');
 
 //Create a new user
-router.post('/signup', (req, res, next) => {
-    //Avoid duplicate emails
-    User
-        .find({email: req.body.email})
-        .exec()
-        .then(user => {
-            if (user.length >= 1) {
-                res
-                    .status(409)
-                    .json({message: 'This email already exists.'});
-            } else {
-                //Encrypt the password and create a user.
-                bcrypt.hash(req.body.password, 10, (err, hash) => {
-                    if (err) {
-                        return res
-                            .status(500)
-                            .json({error: err});
-                    } else {
-                        const user = new User({_id: new mongoose.Types.ObjectId, email: req.body.email, password: hash});
-                        user
-                            .save()
-                            .then(result => {
-                                console.log(result);
-                                res
-                                    .status(201)
-                                    .json({message: 'User created'});
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                res
-                                    .status(500)
-                                    .json({error: err});
-                            });
-                    }
-                })
-            }
-        })
-
-});
+router.post('/signup', UserController.user_signup_user);
 
 //Login users
-router.post('/login', (req, res, next) => {
-    User.find({
-        email: req.body.email
-    })
-        .exec()
-        .then(user => {
-            //If there's no user return a 401 (Unauthorized) insted of 404 (Not found) to prevent brute force attacks. 
-            if (user.length < 1) {
-                return res.status(401).json({
-                    message: 'Authentication failed'
-                });
-            }
-            //if there's a user then compare the provided password with the one stored in the database.
-            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-                if (err) {
-                    return res.status(401).json({
-                        message: 'Authentication failed'
-                    });
-                }
-                if (result) {
-                    console.log(user[0].email, user[0]._id)
-                    //Generate a token
-                    const token = jwt.sign({
-                        email: user[0].email,
-                        userId: user[0]._id
-                    }, 
-                    process.env.JWT_KEY,
-                    {
-                        expiresIn: "1h"
-                    });
-                    //Return the auth token
-                    return res.status(200).json({
-                        message: 'Authorization successful',
-                        token: token
-                    });
-                }
-                //If for some reason none of the if statements can't be reached, return an 401 error.
-                return res.status(401).json({
-                    message: 'Authentication failed'
-                });
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: err
-            });
-        });
-});
+router.post('/login', UserController.user_login_user);
 
 //Delete a specific user by ID
-router.delete('/:userId', (req, res, next) => {
-    User.remove({
-        _id: req.params.userId
-    })
-        .exec()
-        .then(result => {
-            res.status(200).json({
-                message: 'User deleted'
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: err
-            });
-        });
-});
-
-//Just for testing DELETE THIS as it is a security issue.
-// Return all users
-// router.get('/', (req, res, next) => {
-//     User.find()
-//         .select('_id email password')
-//         .exec()
-//         .then(users => {
-//             console.log(users);
-//             const response = {              
-//                 count: users.length,
-//                 users: users.map(user => {
-//                     return {
-//                         id: user._id,
-//                         email: user.email,
-//                         password: user.password,
-//                         request: {
-//                             type: 'GET',
-//                             url: 'http://localhost:3000/user/' + user._id
-//                         }
-//                     }
-//                 })
-//             };
-//             res.status(200).json(response);          
-//         })
-//         .catch(err => {
-//             console.log(err);
-//             res.status(500).json({
-//                 error: err
-//             });
-//         });
-// });
+router.delete('/:userId', UserController.user_delete_user);
 
 module.exports = router;
