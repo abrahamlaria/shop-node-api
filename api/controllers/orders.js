@@ -1,12 +1,13 @@
 const Order = require('../models/order');
 const Product = require('../models/product');
+const User = require('../models/user');
 const mongoose = require('mongoose');
 
 //get all orders controller
 exports.orders_get_all = (req, res, next) => {
     Order
         .find()
-        .select('product quantity _id')
+        .select('product quantity _id createdBy')
         .exec()
         .then(docs => {
             res
@@ -14,10 +15,12 @@ exports.orders_get_all = (req, res, next) => {
                 .json({
                     count: docs.length,
                     orders: docs.map(doc => {
+                        console.log(doc.createdBy + " 123");
                         return {
                             _id: doc._id,
                             product: doc.product,
                             quantity: doc.quantity,
+                            createdBy: doc.createdBy,
                             request: {
                                 type: 'GET',
                                 url: 'http://localhost:3000/orders/' + doc._id
@@ -45,11 +48,10 @@ exports.orders_create_order = (req, res, next) => {
             }
             //If the product exist the create a new order object
             const order = new Order({
-                _id: new mongoose
-                    .Types
-                    .ObjectId(),
+                _id: new mongoose.Types.ObjectId(),
                 quantity: req.body.quantity,
-                product: req.body.productId
+                product: req.body.productId,
+                createdBy: req.userData.userId
             });
             //Save the order that was created and handle responses
             return order.save();               
@@ -63,7 +65,8 @@ exports.orders_create_order = (req, res, next) => {
                     createdOrder: {
                         _id: result._id,
                         product: result.product,
-                        quantity: result.quantity
+                        quantity: result.quantity,
+                        createdBy: result.createdBy
                     },
                     request: {
                         type: 'GET',
