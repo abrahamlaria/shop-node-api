@@ -72,8 +72,7 @@ exports.products_get_product = (req, res, next) => {
     Product.findById(id)
         .select('name price _id productImage')
         .exec()
-        .then(doc => {
-            console.log("From database", doc);
+        .then(doc => {           
             if (doc) {
                 res.status(200).json({
                     product: doc,

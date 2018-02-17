@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 exports.orders_get_all = (req, res, next) => {
     Order
         .find()
-        .select('product quantity _id createdBy')
+        .select('product quantity _id createdBy date')
         .exec()
         .then(docs => {
             res
@@ -15,12 +15,13 @@ exports.orders_get_all = (req, res, next) => {
                 .json({
                     count: docs.length,
                     orders: docs.map(doc => {
-                        console.log(doc.createdBy + " 123");
                         return {
                             _id: doc._id,
                             product: doc.product,
                             quantity: doc.quantity,
                             createdBy: doc.createdBy,
+                            date: doc.date,
+                            totalPrice: doc.totalPrice,
                             request: {
                                 type: 'GET',
                                 url: 'http://localhost:3000/orders/' + doc._id
@@ -46,12 +47,15 @@ exports.orders_create_order = (req, res, next) => {
                     message: 'Product not found'
                 });
             }
+            console.log(product.price);
             //If the product exist the create a new order object
             const order = new Order({
                 _id: new mongoose.Types.ObjectId(),
                 quantity: req.body.quantity,
                 product: req.body.productId,
-                createdBy: req.userData.userId
+                createdBy: req.userData.userId,
+                date: new Date().toISOString(),
+                totalPrice: Number(product.price) * Number(req.body.quantity)
             });
             //Save the order that was created and handle responses
             return order.save();               
@@ -66,7 +70,9 @@ exports.orders_create_order = (req, res, next) => {
                         _id: result._id,
                         product: result.product,
                         quantity: result.quantity,
-                        createdBy: result.createdBy
+                        createdBy: result.createdBy,
+                        date: result.date,
+                        totalPrice: result.totalPrice
                     },
                     request: {
                         type: 'GET',
