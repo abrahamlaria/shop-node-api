@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 //Get all orders controller
 exports.orders_get_all = (req, res, next) => {
-    //First the user making the request in the database
+    //Get the user making the request from the database
     User
         .findById(req.userData.userId)
         .exec()
