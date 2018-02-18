@@ -8,28 +8,7 @@ module.exports = (req, res, next) => {
         console.log(token);
         const decoded = jwt.verify(token, process.env.JWT_KEY);
         req.userData = decoded;
-
-        const id = decoded.userId;
-        User.findById(id)
-            .exec()
-            .then(user => {
-                console.log(user.admin);
-                if (user.admin) {
-                    next();
-                } else {
-                    return res.status(401).json({
-                        message: 'Access forbidden'
-                    })
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                res.status(500).json({error: err});
-            });
-
-
-
-        //next();
+        next();
     } catch(error) {
         return res.status(401).json({
             message: 'Authentication failed'
