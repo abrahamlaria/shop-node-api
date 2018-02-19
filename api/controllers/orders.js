@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 //Get all orders controller
 exports.orders_get_all = (req, res, next) => {
-    //Get the user making the request from the database
+    //Get the user who did the request from the database
     User
         .findById(req.userData.userId)
         .exec()
@@ -158,23 +158,31 @@ exports.orders_get_order = (req, res, next) => {
 //Delete a specific order by ID
 exports.orders_delete_order = (req, res, next) => {
     Order
-        .remove({_id: req.params.orderId})
+        .findById(req.params.orderId)  
+        .remove({_id: req.params.orderId})     
         .exec()
         .then(result => {
-            res
-                .status(200)
-                .json({
-                    message: 'Order deleted',
-                    request: {
-                        type: 'POST',
-                        url: 'http://localhost:3000/orders',
-                        body: {
-                            productId: 'ID',
-                            quantity: 'Number'
+            if (result) {               
+                res
+                    .status(200)
+                    .json({
+                        message: 'Order deleted',
+                        order: result,
+                        request: {
+                            type: 'POST',
+                            url: 'http://localhost:3000/orders',
+                            body: {
+                                productId: 'ID',
+                                quantity: 'Number'
+                            }
                         }
-                    }
-                });
-        })
+                    });
+            } else {
+                return res
+                    .status(404)
+                    .json({message: 'Order not found'});
+            }
+        })        
         .catch(err => {
             res
                 .status(500)
